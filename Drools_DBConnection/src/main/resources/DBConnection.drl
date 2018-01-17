@@ -1,0 +1,31 @@
+package com.sample;
+
+dialect "mvel"
+
+import com.sample.PersonPojo
+import java.util.Date
+import java.sql.Connection
+import java.sql.DriverManager
+import java.sql.ResultSet
+import java.sql.Statement
+
+
+function String ConnectDB(String ConnectionClass,String url,String user, String password) {
+ 
+    Class.forName(ConnectionClass);
+    java.sql.Connection con = DriverManager.getConnection(url, user, password);
+    Statement st = con.createStatement();
+    ResultSet rs = st.executeQuery("select * from Employee where employee_id=199");
+    rs.first();
+  return rs.getString("employee_name");
+        
+}
+
+   
+rule "DBConnection"
+ when
+      person:PersonPojo(name == ConnectDB("com.mysql.jdbc.Driver","jdbc:mysql://localhost:3306/BPMS646","root","redhat1!"))
+ then
+   System.out.println("Rule executed");
+ end
+   
